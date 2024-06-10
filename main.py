@@ -11,55 +11,30 @@ with open("ParkingCoordinates", "rb") as f:
 
 width, height = 107, 48
 
-
 def checkParkingSpace(imgPro):
     spaceCounter = 0
+    status = {}
 
-    for pos in posList:
+    for i, pos in enumerate(posList):
         x, y = pos
-
         imgCrop = imgPro[y : y + height, x : x + width]
         count = cv2.countNonZero(imgCrop)
 
         if count < 900:
-            color = (0, 255, 0)
-            thickness = 5
-            spaceCounter += 1
+            status[f"space_{i+1}"] = "vacant"
         else:
-            color = (0, 0, 255)
-            thickness = 2
+            status[f"space_{i+1}"] = "occupied"
 
-        cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
-        cvzone.putTextRect(
-            img,
-            str(count),
-            (x, y + height - 3),
-            scale=1,
-            thickness=2,
-            offset=0,
-            colorR=color,
-        )
-
-    cvzone.putTextRect(
-        img,
-        f"Free: {spaceCounter}/{len(posList)}",
-        (100, 50),
-        scale=3,
-        thickness=5,
-        offset=20,
-        colorR=(0, 200, 0),
-    )
-
+    return status
 
 while True:
-    # Check if we have reached the end of the video
     if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
         cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
-    # Read a frame from the video
     success, img = cap.read()
+    if not success:
+        break
 
-    # Convert the frame to grayscale and apply image processing
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     imgBlur = cv2.GaussianBlur(imgGray, (3, 3), 1)
     imgThreshold = cv2.adaptiveThreshold(
@@ -69,17 +44,15 @@ while True:
     kernel = np.ones((3, 3), np.uint8)
     imgDilate = cv2.dilate(imgMedian, kernel, iterations=1)
 
-    # Check parking space occupancy
-    checkParkingSpace(imgDilate)
+    status = checkParkingSpace(imgDilate)
 
-    # Display the processed frame with parking space information
+    with open('parking_status.pkl', 'wb') as file:
+        pickle.dump(status, file)
+
+    # Optional: Display the frame for debugging
     cv2.imshow("Image", img)
-
-    # Check for key press to exit
-    key = cv2.waitKey(10)
-    if key == ord("q"):
+    if cv2.waitKey(10) & 0xFF == ord("q"):
         break
 
-# Release video capture and close windows
 cap.release()
 cv2.destroyAllWindows()

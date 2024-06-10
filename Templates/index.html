@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Space Detection</title>
+    <style>
+        .parking-space {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            display: inline-block;
+            text-align: center;
+            line-height: 50px;
+            color: white;
+            font-weight: bold;
+        }
+        .occupied {
+            background-color: red;
+        }
+        .vacant {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Parking Space Status</h1>
+    <div id="parking-lot"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function fetchParkingStatus() {
+                fetch('/parking_status')
+                    .then(response => response.json())
+                    .then(data => {
+                        const parkingLot = document.getElementById('parking-lot');
+                        parkingLot.innerHTML = ''; // Clear previous status
+                        for (const [space, status] of Object.entries(data)) {
+                            const div = document.createElement('div');
+                            div.className = `parking-space ${status}`;
+                            div.textContent = space;
+                            parkingLot.appendChild(div);
+                        }
+                    });
+            }
+
+            fetchParkingStatus();
+            setInterval(fetchParkingStatus, 5000); // Refresh status every 5 seconds
+        });
+    </script>
+</body>
+</html>
