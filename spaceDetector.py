@@ -35,5 +35,7 @@ while True:
     cv2.setMouseCallback("Parking Lot", handle_mouse_click)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    
+    
 
 cv2.destroyAllWindows()
