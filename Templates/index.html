@@ -11,30 +11,35 @@
 
         #parking-lot {
             display: grid;
-            grid-template-columns: repeat(12, 80px);  /* 6 rows paired to form 12 columns */
-            gap: 10px;
+            grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px; 
+            grid-template-rows: repeat(12, 52px); 
+            gap: 20px;
             justify-content: center;
             margin-top: 20px;
         }
 
         .parking-space {
-            width: 80px;
-            height: 80px;
+            width: 52px; 
+            height: 52px; 
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid black;
-            font-size: 1em;
+            border: 1px solid red;
+            font-size: 0.7em;
+            color: black;
         }
 
         .free {
             background-color: green;
-            color: white;
         }
 
         .occupied {
             background-color: red;
-            color: white;
+        }
+
+        .missing {
+            background-color: white;
+            border: none;
         }
     </style>
 </head>
@@ -51,12 +56,35 @@
                     .then(data => {
                         const parkingLot = document.getElementById('parking-lot');
                         parkingLot.innerHTML = '';  // Clear any existing spaces
-                        for (let i = 1; i <= 69; i++) {
-                            const spaceDiv = document.createElement('div');
-                            const spaceId = `space_${i}`;
-                            spaceDiv.className = `parking-space ${data[spaceId] ? 'free' : 'occupied'}`;
-                            spaceDiv.textContent = spaceId;
-                            parkingLot.appendChild(spaceDiv);
+
+                        for (let row = 0; row < 12; row++) {
+                            for (let col = 0; col < 6; col++) {
+                                // Handle the missing boxes
+                                if (col === 2 && row === 8) {
+                                    const emptyDiv = document.createElement('div');
+                                    emptyDiv.className = 'parking-space missing';
+                                    parkingLot.appendChild(emptyDiv);
+                                    const emptyDiv2 = document.createElement('div');
+                                    emptyDiv2.className = 'parking-space missing';
+                                    parkingLot.appendChild(emptyDiv2);
+                                    col++; // Skip the next column
+                                    continue;
+                                }
+                                if (col === 5 && row === 0) {
+                                    const emptyDiv = document.createElement('div');
+                                    emptyDiv.className = 'parking-space missing';
+                                    parkingLot.appendChild(emptyDiv);
+                                    continue;
+                                }
+
+                                const spaceNumber = row * 6 + col + 1;
+                                const spaceId = `space_${spaceNumber}`;
+
+                                const spaceDiv = document.createElement('div');
+                                spaceDiv.className = `parking-space ${data[spaceId] ? 'free' : 'occupied'}`;
+                                spaceDiv.textContent = spaceId;
+                                parkingLot.appendChild(spaceDiv);
+                            }
                         }
                     })
                     .catch(error => console.error('Error fetching parking status:', error));
