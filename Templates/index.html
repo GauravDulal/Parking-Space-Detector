@@ -2,49 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parking Space Detection</title>
+    <title>Parking Space Detector</title>
     <style>
-        .parking-space {
-            width: 50px;
-            height: 50px;
-            margin: 5px;
-            display: inline-block;
+        body {
             text-align: center;
-            line-height: 50px;
-            color: white;
-            font-weight: bold;
+            font-family: Arial, sans-serif;
         }
+
+        #parking-lot {
+            display: grid;
+            grid-template-columns: repeat(12, 80px);  /* 6 rows paired to form 12 columns */
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .parking-space {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid black;
+            font-size: 1em;
+        }
+
+        .free {
+            background-color: green;
+            color: white;
+        }
+
         .occupied {
             background-color: red;
-        }
-        .vacant {
-            background-color: green;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <h1>Parking Space Status</h1>
-    <div id="parking-lot"></div>
+    <h1>Parking Space Detector</h1>
+    <div id="parking-lot">
+        <!-- Parking spaces will be dynamically added here -->
+    </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            function fetchParkingStatus() {
-                fetch('/parking_status')
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchStatus() {
+                fetch('/status')
                     .then(response => response.json())
                     .then(data => {
                         const parkingLot = document.getElementById('parking-lot');
-                        parkingLot.innerHTML = ''; // Clear previous status
-                        for (const [space, status] of Object.entries(data)) {
-                            const div = document.createElement('div');
-                            div.className = `parking-space ${status}`;
-                            div.textContent = space;
-                            parkingLot.appendChild(div);
+                        parkingLot.innerHTML = '';  // Clear any existing spaces
+                        for (let i = 1; i <= 69; i++) {
+                            const spaceDiv = document.createElement('div');
+                            const spaceId = `space_${i}`;
+                            spaceDiv.className = `parking-space ${data[spaceId] ? 'free' : 'occupied'}`;
+                            spaceDiv.textContent = spaceId;
+                            parkingLot.appendChild(spaceDiv);
                         }
-                    });
+                    })
+                    .catch(error => console.error('Error fetching parking status:', error));
             }
 
-            fetchParkingStatus();
-            setInterval(fetchParkingStatus, 1000); // Refresh status every 5 seconds
+            fetchStatus();  // Initial fetch
+            setInterval(fetchStatus, 5000);  // Fetch every 5 seconds
         });
     </script>
 </body>

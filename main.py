@@ -25,11 +25,11 @@ def checkParkingSpace(imgPro):
             color = (0, 255, 0)
             thickness = 5
             spaceCounter += 1
-            status[f"space_{i+1}"] = "vacant"
+            status[f"space_{i+1}"] = True  # True means vacant
         else:
             color = (0, 0, 255)
             thickness = 2
-            status[f"space_{i+1}"] = "occupied"
+            status[f"space_{i+1}"] = False  # False means occupied
 
         cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
         cvzone.putTextRect(
