@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* body {
+            text-align: center;
+        } */
+
+        #parking-lot {
+            display: grid;
+            grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px;
+            grid-template-rows: repeat(12, 52px);
+            column-gap: 100px;
+            row-gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .parking-space {
+            width: 200px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid red;
+            font-size: 0.7em;
+            color: black;
+        }
+
+        @media screen and (max-width:640px) {
+            #parking-lot {
+                display: grid;
+                grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px;
+                grid-template-rows: repeat(12, 52px);
+                column-gap: 10px;
+                row-gap: 10px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .parking-space {
+                width: 50px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid red;
+                font-size: 0.7em;
+                color: black;
+            }
+        }
+
+        @media screen and (min-width:641px) {
+            #parking-lot {
+                display: grid;
+                grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px;
+                grid-template-rows: repeat(12, 52px);
+                column-gap: 60px;
+                row-gap: 10px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .parking-space {
+                width: 80px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid red;
+                font-size: 0.7em;
+                color: black;
+            }
+        }
+
+        @media screen and (min-width:1024px) {
+            #parking-lot {
+                display: grid;
+                grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px;
+                grid-template-rows: repeat(12, 52px);
+                column-gap: 170px;
+                row-gap: 10px;
+                justify-content: center;
+                margin-top: 20px;
+            }
+
+            .parking-space {
+                width: 200px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid red;
+                font-size: 0.7em;
+                color: black;
+            }
+        }
+
+        .free {
+            background-color: green;
+        }
+
+        .occupied {
+            background-color: red;
+        }
+
+        .missing {
+            background-color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="text-white text-lg font-bold">
+                <img src="/static/images.png" alt="Logo" class="w-10 ml-4">
+            </div>
+            <div class="hidden md:flex space-x-4">
+                <a href="/" class="text-white hover:text-white font-semibold">Home</a>
+                <a href="#" class="text-gray-300 hover:text-white font-semibold">Live</a>
+                <a href="/checkout" class="text-gray-300 hover:text-white font-semibold">Checkout</a>
+                <a href="/log" class="text-gray-300 hover:text-white font-semibold">Log</a>
+            </div>
+            <div class="flex items-center">
+                <div class="relative md:hidden">
+                    <button class="text-gray-300 hover:text-white focus:outline-none" id="menu-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </button>
+                    <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50" id="menu">
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Home</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Live</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Checkout</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Log</a>
+                    </div>
+                </div>
+                <div class="ml-4">
+                    <img src="/static/images.png" alt="Logo" class="w-10 mr-4 rounded-full">
+                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class=" grid gap-y-10 gap-x-6 md:grid-cols-3 xl:grid-cols-3 mt-5 p-6">
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+            <div
+                class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    class="w-6 h-6 text-white">
+                    <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z"></path>
+                    <path fill-rule="evenodd"
+                        d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z"
+                        clip-rule="evenodd"></path>
+                    <path
+                        d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z">
+                    </path>
+                </svg>
+            </div>
+            <div class="p-4 text-right">
+                <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Today's
+                    Collection</p>
+                <h4
+                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                    Rs.53k</h4>
+            </div>
+        </div>
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+            <div
+                class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-green-600 to-green-400 text-white shadow-green-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+                <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" width="32px" height="32px" viewBox="0 0 31.354 31.354"
+                    xml:space="preserve" stroke="#ffffff">
+                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                    <g id="SVGRepo_iconCarrier">
+                        <g>
+                            <path
+                                d="M29.605,18.478l-0.882-7.591h-1.692l-0.078-0.9h3.205v-2.44H26.74l-0.365-4.174H4.98L4.615,7.546H1.226v2.44h3.176 l-0.079,0.9H2.631L1.75,18.478H0v4.916h2.536v4.588h5.071v-4.588h16.139v4.588h5.072v-4.588h2.535v-4.916H29.605z M6.864,5.427 H24.49l0.479,5.459H6.385L6.864,5.427z M6,17.173c-1.028,0-1.862-0.833-1.862-1.862c0-1.028,0.834-1.862,1.862-1.862 c1.029,0,1.862,0.834,1.862,1.862C7.862,16.339,7.029,17.173,6,17.173z M20.92,21.724H10.434v-7.42h10.485L20.92,21.724 L20.92,21.724z M25.354,17.173c-1.029,0-1.861-0.833-1.861-1.862c0-1.028,0.832-1.862,1.861-1.862c1.028,0,1.862,0.834,1.862,1.862 C27.216,16.339,26.383,17.173,25.354,17.173z">
+                            </path>
+                        </g>
+                    </g>
+                </svg>
+            </div>
+            <div class="p-4 text-right">
+                <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Total Car
+                    Parked</p>
+                <h4
+                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                    3,462</h4>
+            </div>
+        </div>
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+            <div
+                class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-orange-600 to-orange-400 text-white shadow-orange-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    class="w-6 h-6 text-white">
+                    <path
+                        d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75zM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 01-1.875-1.875V8.625zM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 013 19.875v-6.75z">
+                    </path>
+                </svg>
+            </div>
+            <div class="p-4 text-right">
+                <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Total
+                    Spaces</p>
+                <h4
+                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                    69</h4>
+            </div>
+        </div>
+    </div>
+    <!-- <a href="{{ url_for('auth.logout') }}"
+        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Logout
+    </a> -->
+    <div class="container mx-auto mx-auto p-2 xl:p-8 md:p-4 ">
+        <div class="text flex flex-col items-center">
+            <p class="font-bold text-2xl mb-4 ">Parking Area</p>
+        </div>
+        <div id="parking-lot">
+            <!-- Parking spaces will be dynamically added here -->
+        </div>
+        <!-- <div class="grid grid-col-3 gap-y-4 pr-6 xl:p-10 md:p-2">
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                01
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container max-w-md xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                02
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                03
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                04
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                05
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                06
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                07
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                08
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                09
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                10
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                11
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+            </div>
+            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
+                12
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
+                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
+                </div>
+            </div>
+        </div> -->
+    </div>
+</body>
+<script>
+    document.getElementById('menu-btn').addEventListener('click', () => {
+        const menu = document.getElementById('menu');
+        menu.classList.toggle('hidden');
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        function fetchStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    const parkingLot = document.getElementById('parking-lot');
+                    parkingLot.innerHTML = '';  // Clear any existing spaces
+
+                    for (let row = 0; row < 12; row++) {
+                        for (let col = 0; col < 6; col++) {
+                            // Handle the missing boxes
+                            if (col === 2 && row === 8) {
+                                const emptyDiv = document.createElement('div');
+                                emptyDiv.className = 'parking-space missing';
+                                parkingLot.appendChild(emptyDiv);
+                                const emptyDiv2 = document.createElement('div');
+                                emptyDiv2.className = 'parking-space missing';
+                                parkingLot.appendChild(emptyDiv2);
+                                col++; // Skip the next column
+                                continue;
+                            }
+                            if (col === 5 && row === 0) {
+                                const emptyDiv = document.createElement('div');
+                                emptyDiv.className = 'parking-space missing';
+                                parkingLot.appendChild(emptyDiv);
+                                continue;
+                            }
+
+                            const spaceNumber = row * 6 + col + 1;
+                            const spaceId = `space_${spaceNumber}`;
+
+                            const spaceDiv = document.createElement('div');
+                            spaceDiv.className = `parking-space ${data[spaceId] ? 'free' : 'occupied'}`;
+                            spaceDiv.textContent = spaceId;
+                            parkingLot.appendChild(spaceDiv);
+                        }
+                    }
+                })
+                .catch(error => console.error('Error fetching parking status:', error));
+        }
+
+        fetchStatus();  // Initial fetch
+        setInterval(fetchStatus, 5000);  // Fetch every 5 seconds
+    });
+</script>
+
+</html>
