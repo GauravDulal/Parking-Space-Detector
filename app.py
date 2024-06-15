@@ -3,9 +3,18 @@ import pickle
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/log')
+def log():
+    return render_template('log.html')
+
+@app.route('/checkout')
+def checkout():
+    return render_template('checkout.html')
 
 @app.route('/status')
 def status():
