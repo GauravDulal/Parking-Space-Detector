@@ -32,25 +32,25 @@ def checkParkingSpace(imgPro):
             status[f"space_{i+1}"] = False  # False means occupied
 
         cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
-        cvzone.putTextRect(
-            img,
-            str(count),
-            (x, y + height - 3),
-            scale=1,
-            thickness=2,
-            offset=0,
-            colorR=color,
-        )
+        # cvzone.putTextRect(
+        #     img,
+        #     str(count),
+        #     (x, y + height - 3),
+        #     scale=1,
+        #     thickness=2,
+        #     offset=0,
+        #     colorR=color,
+        # )
 
-    # cvzone.putTextRect(
-    #     img,
-    #     f"Free: {spaceCounter}/{len(posList)}",
-    #     (100, 50),
-    #     scale=3,
-    #     thickness=5,
-    #     offset=20,
-    #     colorR=(0, 200, 0),
-    # )
+    cvzone.putTextRect(
+        img,
+        f"Free: {spaceCounter}/{len(posList)}",
+        (100, 50),
+        scale=3,
+        thickness=5,
+        offset=20,
+        colorR=(0, 200, 0),
+    )
 
     with open('parking_status.pkl', 'wb') as file:
         pickle.dump(status, file)
