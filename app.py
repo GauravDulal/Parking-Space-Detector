@@ -1,8 +1,13 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request, flash
 import pickle
 
 app = Flask(__name__)
 
+@app.route('/login' , methods=['GET','POST'])
+def login():
+    # data = request.form
+    # print(data)
+    return render_template('login.html')
 
 @app.route('/')
 def index():
