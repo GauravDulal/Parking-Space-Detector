@@ -2,14 +2,28 @@ import cv2
 import pickle
 import cvzone
 import numpy as np
+import mysql.connector
+from datetime import datetime
 
 # Video feed
 cap = cv2.VideoCapture("ParkVideo.mp4")
+
+# Dictionary to track entry times
+entry_times = {}
 
 with open("ParkingCoordinates", "rb") as f:
     posList = pickle.load(f)
 
 width, height = 107, 48
+
+# Connect to MySQL database
+conn = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    password='',
+    database='psds'
+)
+cursor = conn.cursor()
 
 # Initialize previous status dictionary
 previous_status = {}
@@ -18,6 +32,7 @@ def checkParkingSpace(imgPro):
     global previous_status
     spaceCounter = 0
     status = {}
+    timestamp = datetime.now()
 
     for i, pos in enumerate(posList):
         x, y = pos
@@ -30,10 +45,20 @@ def checkParkingSpace(imgPro):
             thickness = 5
             spaceCounter += 1
             status[f"space_{i+1}"] = True  # True means vacant
+            if i+1 in entry_times:
+                # Calculate duration and cost
+                entry_time = entry_times.pop(i+1)
+                duration = timestamp - entry_time
+                hours_parked = duration.total_seconds() / 360
+                parked_time = hours_parked # multiply by 100 for small time the amount is significantly lower
+                cost = round(parked_time * 100, 2)
         else:
             color = (0, 0, 255)  # red
             thickness = 2
             status[f"space_{i+1}"] = False  # False means occupied
+            # Record the entry time if the space is newly occupied
+            if i+1 not in entry_times:
+                entry_times[i+1] = timestamp
 
         cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
         cvzone.putTextRect(
@@ -59,8 +84,24 @@ def checkParkingSpace(imgPro):
     # Compare current status with previous status
     for key in status:
         if key in previous_status:
-            if previous_status[key] == True and status[key] == False or previous_status[key] == False and status[key] == True :
-                print(f"Change at {key}")
+            if previous_status[key] == True and status[key] == False : #or previous_status[key] == False and status[key] == True :
+                key_value = key.find('_')
+                result = key[key_value + 1:]   
+                try:
+                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost) VALUES (%s,%s,%s,%s, %s, %s, %s)', 
+                            ('',result,timestamp, entry_time, timestamp, cost , 'Exit'))
+                    conn.commit() 
+                finally:
+                      print(f"{key} is logged")
+            elif  previous_status[key] == False and status[key] == True:
+                key_value = key.find('_')
+                result = key[key_value + 1:]   
+                try:
+                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost, status) VALUES (%s,%s,%s,%s, %s, %s, %s)', 
+                            ('',result,timestamp,entry_time,timestamp,cost,'Entry'))
+                    conn.commit() 
+                finally:
+                      print(f"{key} is logged")
 
     # Update previous status
     previous_status = status.copy()
@@ -69,8 +110,8 @@ def checkParkingSpace(imgPro):
         pickle.dump(status, file)
 
 while True:
-    if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
-        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    # if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
+    #     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
     success, img = cap.read()
 
