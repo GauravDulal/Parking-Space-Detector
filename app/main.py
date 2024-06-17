@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, jsonify, redirect, url_for, request
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user 
 import mysql.connector
 import pickle
+import subprocess
 
 main = Blueprint('main', __name__)
 
@@ -48,6 +49,14 @@ def delete(log_id):
 @login_required
 def checkout():
     return render_template('checkout.html')
+
+# @main.route('/live')
+# def live():
+#     try:
+#         subprocess.run(['python', 'app_main.py'], check=True)
+#         return "Main script executed successfully!"
+#     except subprocess.CalledProcessError as e:
+#         return f"An error occurred: {e}"
 
 @main.route('/status')
 def status():
