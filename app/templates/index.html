@@ -6,10 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="shortcut icon" href="/static/images.png" type="image/x-icon">
     <style>
-        /* body {
+        body {
             text-align: center;
-        } */
+
+        }
 
         #parking-lot {
             display: grid;
@@ -28,8 +30,8 @@
             align-items: center;
             justify-content: center;
             border: 1px solid red;
-            font-size: 0.7em;
-            color: black;
+            font-size: 1em;
+            color: white;
         }
 
         @media screen and (max-width:640px) {
@@ -50,8 +52,8 @@
                 align-items: center;
                 justify-content: center;
                 border: 1px solid red;
-                font-size: 0.7em;
-                color: black;
+                font-size: 0.8em;
+                color: white;
             }
         }
 
@@ -73,8 +75,8 @@
                 align-items: center;
                 justify-content: center;
                 border: 1px solid red;
-                font-size: 0.7em;
-                color: black;
+                font-size: 0.9em;
+                color: white;
             }
         }
 
@@ -96,21 +98,21 @@
                 align-items: center;
                 justify-content: center;
                 border: 1px solid red;
-                font-size: 0.7em;
-                color: black;
+                font-size: 1em;
+                color: white;
             }
         }
 
         .free {
-            background-color: green;
+            background-color: #22C55E;
         }
 
         .occupied {
-            background-color: red;
+            background-color: #EF4444;
         }
 
         .missing {
-            background-color: white;
+            background-color: #3B82F6;
             border: none;
         }
     </style>
@@ -123,7 +125,7 @@
                 <img src="/static/images.png" alt="Logo" class="w-10 ml-4">
             </div>
             <div class="hidden md:flex space-x-4">
-                <a href="/" class="text-white hover:text-white font-semibold">Home</a>
+                <a href="/" class="text-red-500 hover:text-red-700 font-semibold">Home</a>
                 <a href="#" class="text-gray-300 hover:text-white font-semibold">Live</a>
                 <a href="/checkout" class="text-gray-300 hover:text-white font-semibold">Checkout</a>
                 <a href="/log" class="text-gray-300 hover:text-white font-semibold">Log</a>
@@ -138,10 +140,10 @@
                         </svg>
                     </button>
                     <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50" id="menu">
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Home</a>
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Live</a>
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Checkout</a>
-                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 font-semibold">Log</a>
+                        <a href="#" class="block px-4 py-2 text-red-500 hover:text-red-700 ">Home</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Live</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Checkout</a>
+                        <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 ">Log</a>
                     </div>
                 </div>
                 <div class="ml-4">
@@ -220,198 +222,13 @@
             </div>
         </div>
     </div>
-    <!-- <a href="{{ url_for('auth.logout') }}"
-        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Logout
-    </a> -->
-    <div class="container mx-auto mx-auto p-2 xl:p-8 md:p-4 ">
-        <div class="text flex flex-col items-center">
+    <div class="container p-2 xl:p-8 md:p-4 ">
+        <div class="text flex flex-col items-center justify-center">
             <p class="font-bold text-2xl mb-4 ">Parking Area</p>
         </div>
         <div id="parking-lot">
             <!-- Parking spaces will be dynamically added here -->
         </div>
-        <!-- <div class="grid grid-col-3 gap-y-4 pr-6 xl:p-10 md:p-2">
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                01
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container max-w-md xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                02
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                03
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                04
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                05
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                06
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                07
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                08
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                09
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                10
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                11
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-            </div>
-            <div class="container flex space-x-4 md:space-x-8 lg:space-x-4 xl:space-x-16 ">
-                12
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 md:gap-4 lg:gap-4 md:ml-4">
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-red-500"></div>
-                    <div class="container w-12 xl:w-48 md:w-24 lg:w-36 h-10 bg-green-500"></div>
-                </div>
-            </div>
-        </div> -->
     </div>
 </body>
 <script>
@@ -434,9 +251,11 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
+                                emptyDiv.textContent = 'Unavailable';
                                 const emptyDiv2 = document.createElement('div');
                                 emptyDiv2.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv2);
+                                emptyDiv2.textContent = 'Unavailable';
                                 col++; // Skip the next column
                                 continue;
                             }
@@ -444,6 +263,7 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
+                                emptyDiv.textContent = 'Unavailable';
                                 continue;
                             }
 

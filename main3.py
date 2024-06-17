@@ -17,7 +17,7 @@ width, height = 107, 48
 conn = mysql.connector.connect(
     host='localhost',
     user='root', 
-    password='maroon@&1889',  
+    password='',  
     database='psds'
 )
 cursor = conn.cursor()
@@ -48,7 +48,7 @@ def checkParkingSpace(imgPro):
                 entry_time = entry_times.pop(i+1)
                 duration = timestamp - entry_time
                 hours_parked = duration.total_seconds() / 3600
-                parked_time = hours_parked* 10000
+                parked_time = hours_parked* 1000
                 cost = round(parked_time * 100, 2)
 
                 # Record the billing information

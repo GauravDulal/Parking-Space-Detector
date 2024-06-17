@@ -3,7 +3,7 @@ import pickle
 import cvzone
 import numpy as np
 import mysql.connector
-from datetime import datetime
+# from datetime import datetime
 
 # Video feed
 cap = cv2.VideoCapture("ParkVideo.mp4")
@@ -17,7 +17,7 @@ width, height = 107, 48
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='maroon@&1889',
+    password='',
     database='psds'
 )
 cursor = conn.cursor()
@@ -25,7 +25,7 @@ cursor = conn.cursor()
 def checkParkingSpace(imgPro):
     spaceCounter = 0
     status = {}
-    timestamp = datetime.now()
+    # timestamp = datetime.now()
 
     for i, pos in enumerate(posList):
         x, y = pos
@@ -53,12 +53,12 @@ def checkParkingSpace(imgPro):
             offset=0,
             colorR=color,
         )
-
+        # creates multiple record is not fesible
         # Insert status into the database
-        cursor.execute('INSERT INTO ParkingStatus (timestamp, space_id, status) VALUES (%s, %s, %s)', 
-                       (timestamp, i+1, status[f"space_{i+1}"]))
+    #     cursor.execute('INSERT INTO ParkingStatus (timestamp, space_id, status) VALUES (%s, %s, %s)', 
+    #                    (timestamp, i+1, status[f"space_{i+1}"]))
 
-    conn.commit()
+    # conn.commit()   
 
     cvzone.putTextRect(
         img,
