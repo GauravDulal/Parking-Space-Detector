@@ -27,7 +27,7 @@ def index():
 def log():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT log_id, space_id, log_time, entry_time, exit_time, cost,status FROM log")
+    cursor.execute("SELECT log_id, space_id, log_time, entry_time, exit_time, cost,status,payment_status FROM log")
     logs = cursor.fetchall()
     cursor.close()
     conn.close()

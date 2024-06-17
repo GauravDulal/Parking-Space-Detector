@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="shortcut icon" href="/static/images.png" type="image/x-icon">
 </head>
-
 <body class="bg-gray-50">
 
     <nav class="bg-gray-800 p-4">
@@ -52,7 +50,7 @@
     <div class="container mx-auto mt-4">
         {% for log in logs %}
         <div class="bg-gray-100 border border-gray-300 rounded-md mb-4">
-            <div class="flex p-4 border-l-4 border-green-500">
+            <div class="flex p-4 {% if log[7] == 'Unpaid' %}border-l-4 border-red-500{% elif log[7] == 'Paid' %}border-l-4 border-green-500{% else  %}border-l-4 border-blue-500{% endif %}">
                 <div class="space-y-2 border-r-2 pr-4">
                     <div class="text-lg font-semibold"><span class="text-sm font-normal text-gray-500">Log #</span> {{ log[0] }}
                     </div>
@@ -61,7 +59,7 @@
                 </div>
                 <div class="flex-1 ml-4 border-r-2 pr-4">
                     <div class="space-y-2">
-                        <div class="text-xl font-medium">{{ log[6]}}</div>
+                        <div class="text-xl font-medium">{{ log[6] }}</div>
                         <div class="text-lg"><span class="text-sm font-normal text-gray-500">Entry Time</span> {{ log[3] }}
                         </div>
                         <div class="text-lg"><span class="text-sm font-normal text-gray-500">Exit Time</span> {{ log[4] }}
@@ -94,5 +92,4 @@
     </script>
 
 </body>
-
 </html>
