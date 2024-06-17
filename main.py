@@ -11,7 +11,11 @@ with open("ParkingCoordinates", "rb") as f:
 
 width, height = 107, 48
 
+# Initialize previous status dictionary
+previous_status = {}
+
 def checkParkingSpace(imgPro):
+    global previous_status
     spaceCounter = 0
     status = {}
 
@@ -22,25 +26,25 @@ def checkParkingSpace(imgPro):
         count = cv2.countNonZero(imgCrop)
 
         if count < 900:
-            color = (0, 255, 0)
+            color = (0, 255, 0)  # green
             thickness = 5
             spaceCounter += 1
             status[f"space_{i+1}"] = True  # True means vacant
         else:
-            color = (0, 0, 255)
+            color = (0, 0, 255)  # red
             thickness = 2
             status[f"space_{i+1}"] = False  # False means occupied
 
         cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
-        # cvzone.putTextRect(
-        #     img,
-        #     str(count),
-        #     (x, y + height - 3),
-        #     scale=1,
-        #     thickness=2,
-        #     offset=0,
-        #     colorR=color,
-        # )
+        cvzone.putTextRect(
+            img,
+            str({i+1}),
+            (x, y + height - 3),
+            scale=1,
+            thickness=2,
+            offset=0,
+            colorR=color,
+        )
 
     cvzone.putTextRect(
         img,
@@ -51,6 +55,15 @@ def checkParkingSpace(imgPro):
         offset=20,
         colorR=(0, 200, 0),
     )
+
+    # Compare current status with previous status
+    for key in status:
+        if key in previous_status:
+            if previous_status[key] == True and status[key] == False or previous_status[key] == False and status[key] == True :
+                print(f"Change at {key}")
+
+    # Update previous status
+    previous_status = status.copy()
 
     with open('parking_status.pkl', 'wb') as file:
         pickle.dump(status, file)
