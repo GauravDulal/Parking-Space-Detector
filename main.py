@@ -88,8 +88,8 @@ def checkParkingSpace(imgPro):
                 key_value = key.find('_')
                 result = key[key_value + 1:]   
                 try:
-                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost) VALUES (%s,%s,%s,%s, %s, %s, %s)', 
-                            ('',result,timestamp, entry_time, timestamp, cost , 'Exit'))
+                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost,status,payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s, %s)', 
+                            ('',result,timestamp, entry_time, timestamp, cost , 'Entry','Unpaid'))
                     conn.commit() 
                 finally:
                       print(f"{key} is logged")
@@ -97,8 +97,8 @@ def checkParkingSpace(imgPro):
                 key_value = key.find('_')
                 result = key[key_value + 1:]   
                 try:
-                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost, status) VALUES (%s,%s,%s,%s, %s, %s, %s)', 
-                            ('',result,timestamp,entry_time,timestamp,cost,'Entry'))
+                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s, %s)', 
+                            ('',result,timestamp,entry_time,timestamp,cost,'Exit', 'Unpaid'))
                     conn.commit() 
                 finally:
                       print(f"{key} is logged")
