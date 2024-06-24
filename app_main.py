@@ -49,7 +49,7 @@ def checkParkingSpace(imgPro):
                 # Calculate duration and cost
                 entry_time = entry_times.pop(i+1)
                 duration = timestamp - entry_time
-                hours_parked = duration.total_seconds() / 360
+                hours_parked = duration.total_seconds() / 3600
                 parked_time = hours_parked # multiply by 100 for small time the amount is significantly lower
                 cost = round(parked_time * 100, 2)
         else:
@@ -63,7 +63,7 @@ def checkParkingSpace(imgPro):
         cv2.rectangle(img, pos, (pos[0] + width, pos[1] + height), color, thickness)
         cvzone.putTextRect(
             img,
-            str({i+1}),
+            str(i+1),
             (x, y + height - 3),
             scale=1,
             thickness=2,
@@ -84,24 +84,28 @@ def checkParkingSpace(imgPro):
     # Compare current status with previous status
     for key in status:
         if key in previous_status:
-            if previous_status[key] == True and status[key] == False : #or previous_status[key] == False and status[key] == True :
-                key_value = key.find('_')
-                result = key[key_value + 1:]   
+            key_value = key.find('_')
+            result = key[key_value + 1:]
+            if previous_status[key] == True and status[key] == False:
                 try:
-                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost,status,payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s, %s)', 
-                            ('',result,timestamp, entry_time, timestamp, cost , 'Entry','Unpaid'))
+                    cursor.execute('INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
+                            (result, timestamp, entry_times.get(int(result)), timestamp, 0, 'Entry', 'Unpaid'))
                     conn.commit() 
                 finally:
-                      print(f"{key} is logged")
-            elif  previous_status[key] == False and status[key] == True:
-                key_value = key.find('_')
-                result = key[key_value + 1:]   
+                      print(f"{key} is logged as Entry")
+            elif previous_status[key] == False and status[key] == True:
+                if int(result) in entry_times:
+                    entry_time = entry_times.pop(int(result))
+                    duration = timestamp - entry_time
+                    hours_parked = duration.total_seconds() / 3600
+                    parked_time = hours_parked # multiply by 100 for small time the amount is significantly lower
+                    cost = round(parked_time * 500, 2)
                 try:
-                    cursor.execute('INSERT INTO log (log_id, space_id,log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s, %s)', 
-                            ('',result,timestamp,entry_time,timestamp,cost,'Exit', 'Unpaid'))
+                    cursor.execute('INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
+                            (result, timestamp, entry_time, timestamp, cost, 'Exit', 'Unpaid'))
                     conn.commit() 
                 finally:
-                      print(f"{key} is logged")
+                      print(f"{key} is logged as Exit")
 
     # Update previous status
     previous_status = status.copy()
@@ -110,8 +114,8 @@ def checkParkingSpace(imgPro):
         pickle.dump(status, file)
 
 while True:
-    # if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
-    #     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
     success, img = cap.read()
 
