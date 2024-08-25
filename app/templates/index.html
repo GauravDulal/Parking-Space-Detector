@@ -114,7 +114,7 @@
         }
 
         .missing {
-            background-color: #3B82F6;
+            background-color: white;
             border: none;
         }
     </style>
@@ -224,7 +224,7 @@
             </div>
         </div>
     </div>
-    <div class="container  justify-center items-center p-2 xl:p-8 md:p-4 ">
+    <div class="container justify-center items-center p-2 xl:p-8 md:p-4 2xl:ml-64 ">
         <div class="text flex flex-col items-center justify-center">
             <p class="font-bold text-2xl mb-4 ml-8 ">Parking Area</p>
         </div>
@@ -253,11 +253,11 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
-                                emptyDiv.textContent = 'Unavailable';
+                                emptyDiv.textContent = '';
                                 const emptyDiv2 = document.createElement('div');
                                 emptyDiv2.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv2);
-                                emptyDiv2.textContent = 'Unavailable';
+                                emptyDiv2.textContent = '';
                                 col++; // Skip the next column
                                 continue;
                             }
@@ -265,7 +265,7 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
-                                emptyDiv.textContent = 'Unavailable';
+                                emptyDiv.textContent = '';
                                 continue;
                             }
 

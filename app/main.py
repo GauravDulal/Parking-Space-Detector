@@ -50,13 +50,13 @@ def delete(log_id):
 def checkout():
     return render_template('checkout.html')
 
-# @main.route('/live')
-# def live():
-#     try:
-#         subprocess.run(['python', 'app_main.py'], check=True)
-#         return "Main script executed successfully!"
-#     except subprocess.CalledProcessError as e:
-#         return f"An error occurred: {e}"
+@main.route('/live')
+def live():
+    try:
+        subprocess.run(['python', 'app_main.py'], check=True)
+        return render_template('index.html')
+    except subprocess.CalledProcessError as e:
+        return f"An error occurred: {e}"
 
 @main.route('/status')
 def status():
