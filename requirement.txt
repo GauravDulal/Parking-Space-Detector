@@ -1,0 +1,9 @@
+flask
+flask_sqlalchemy
+flask_migrate
+flask_login
+flask_wtf
+mysql-connector-python
+pymysql
+opencv-python
+cvzone
