@@ -53,5 +53,8 @@ This is my 6th Semester Project
     Run your flask code using:
 
         flask run    
-        **CTRL+C to close the flask app in terminal**
-        **Q to end the cv window of the python app** 
+
+
+Note:
+- **CTRL+C to close the flask app in terminal**
+- **Q to end the cv window of the python app** 
