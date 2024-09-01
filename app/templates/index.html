@@ -12,6 +12,7 @@
             text-align: center;
 
         }
+
         #parking-lot {
             display: grid;
             grid-template-columns: repeat(2, 52px) 52px repeat(2, 52px) 52px;
@@ -114,6 +115,7 @@
         }
 
         .missing {
+            background-color: #3B82F6;
             background-color: white;
             border: none;
         }
@@ -224,14 +226,17 @@
             </div>
         </div>
     </div>
-    <div class="container justify-center items-center p-2 xl:p-8 md:p-4 2xl:ml-64 ">
-        <div class="text flex flex-col items-center justify-center">
-            <p class="font-bold text-2xl mb-4 ml-8 ">Parking Area</p>
-        </div>
-        <div id="parking-lot">
-            <!-- Parking spaces will be dynamically added here -->
-        </div>
     </div>
+    </div>
+    <div class="container  justify-center items-center p-2 xl:p-8 md:p-4 ">
+        <div class="container justify-center items-center p-2 xl:p-8 md:p-4 2xl:ml-64 ">
+            <div class="text flex flex-col items-center justify-center">
+                <p class="font-bold text-2xl mb-4 ml-8 ">Parking Area</p>
+            </div>
+            <div id="parking-lot">
+                <!-- Parking spaces will be dynamically added here -->
+            </div>
+        </div>
 </body>
 <script>
     document.getElementById('menu-btn').addEventListener('click', () => {
@@ -253,10 +258,12 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
+                                emptyDiv.textContent = 'Unavailable';
                                 emptyDiv.textContent = '';
                                 const emptyDiv2 = document.createElement('div');
                                 emptyDiv2.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv2);
+                                emptyDiv2.textContent = 'Unavailable';
                                 emptyDiv2.textContent = '';
                                 col++; // Skip the next column
                                 continue;
@@ -265,6 +272,7 @@
                                 const emptyDiv = document.createElement('div');
                                 emptyDiv.className = 'parking-space missing';
                                 parkingLot.appendChild(emptyDiv);
+                                emptyDiv.textContent = 'Unavailable';
                                 emptyDiv.textContent = '';
                                 continue;
                             }
