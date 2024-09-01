@@ -39,7 +39,7 @@ def log():
 def delete(log_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM log WHERE log_id = %s", (log_id,))
+    cursor.execute("DELETE FROM log WHERE log_id = %s", (log_id))
     conn.commit()
     cursor.close()
     conn.close()
@@ -56,7 +56,7 @@ def live():
         subprocess.run(['python', 'app_main.py'], check=True)
         return render_template('index.html')
     except subprocess.CalledProcessError as e:
-        return f"An error occurred: {e}"
+        return "An error occurred: {e}"
 
 @main.route('/status')
 def status():
