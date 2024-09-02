@@ -78,3 +78,16 @@ def get_total_cars():
 def get_total_cars_route():
     total_cars = get_total_cars()
     return jsonify(total_cars=total_cars+59)
+
+def get_total_money():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT SUM(cost) FROM log')
+    total_money = cursor.fetchone()[0]
+    conn.close()
+    return total_money
+
+@main.route('/get_total_money')
+def get_total_money_route():
+    total_money = get_total_money()
+    return jsonify(total_money=total_money)
