@@ -39,7 +39,7 @@ def log():
 def delete(log_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM log WHERE log_id = %s", (log_id))
+    cursor.execute("DELETE FROM log WHERE log_id = %s", (log_id,))
     conn.commit()
     cursor.close()
     conn.close()
@@ -65,3 +65,16 @@ def status():
         return jsonify(parking_status)
     except FileNotFoundError:
         return jsonify({"error": "Parking status file not found."}), 404
+
+def get_total_cars():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT COUNT(*) FROM log WHERE status="Entry"')
+    total_cars = cursor.fetchone()[0]
+    conn.close()
+    return total_cars
+
+@main.route('/get_total_cars')
+def get_total_cars_route():
+    total_cars = get_total_cars()
+    return jsonify(total_cars=total_cars+59)
