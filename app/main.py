@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 import mysql.connector
 import pickle
 import subprocess
+from datetime import timedelta, datetime
 
 main = Blueprint('main', __name__)
 
@@ -114,47 +115,131 @@ def get_times(space_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        # Execute query
-        cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s', (space_id,))
-        
-        # Fetch the result (fetchone will fetch a single record)
-        times = cursor.fetchone()
-
-        # Ensure all results are processed before closing the cursor
-        cursor.fetchall()  # Use this to clear any remaining unread results if necessary
-
+        # Fetch all unpaid records for the space_id
+        cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s AND payment_status = "Unpaid"', (space_id,))
+        times = cursor.fetchall()  # Fetch all unpaid entries
         if times:
-            entry_time, exit_time = times
-            return entry_time, exit_time
+            return times  # Returns a list of unpaid entries
         else:
             return None
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return None
     finally:
-        # Ensure cursor and connection are closed after the fetch
         cursor.close()
         conn.close()
+
+
+
+# def get_times(space_id):
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+#     try:
+#         # Execute query
+#         cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s', (space_id,))
+        
+#         # Fetch the result (fetchone will fetch a single record)
+#         times = cursor.fetchone()
+
+#         # Ensure all results are processed before closing the cursor
+#         cursor.fetchall()  # Use this to clear any remaining unread results if necessary
+
+#         if times:
+#             entry_time, exit_time = times
+#             return entry_time, exit_time
+#         else:
+#             return None
+#     except mysql.connector.Error as err:
+#         print(f"Error: {err}")
+#         return None
+#     finally:
+#         # Ensure cursor and connection are closed after the fetch
+#         cursor.close()
+#         conn.close()
     
+# @main.route('/get_start_time', methods=['POST'])
+# def fetch_times():
+#     slot_number = request.form['slot_number']
+#     times = get_times(slot_number)
+#     if times:
+#         entry_time, exit_time = times
+#         # Convert timedelta to hours, minutes, and seconds
+#         entry_total_seconds = entry_time.total_seconds()
+#         entry_hours, remainder = divmod(entry_total_seconds, 3600)
+#         entry_minutes, entry_seconds = divmod(remainder, 60)
+#         formatted_entry_time = f"{int(entry_hours):02}:{int(entry_minutes):02}:{int(entry_seconds):02}"
+
+#         exit_total_seconds = exit_time.total_seconds()
+#         exit_hours, remainder = divmod(exit_total_seconds, 3600)
+#         exit_minutes, exit_seconds = divmod(remainder, 60)
+#         formatted_exit_time = f"{int(exit_hours):02}:{int(exit_minutes):02}:{int(exit_seconds):02}"
+#         time_difference_seconds = (exit_time - entry_time).total_seconds()
+#         time_difference_hours = time_difference_seconds / 3600
+#         total_money = round(time_difference_hours * 100, 2)
+#         return render_template('payment.html', entry_time=formatted_entry_time, exit_time=formatted_exit_time, time_difference=time_difference_seconds, total_money=total_money )
+#     else:
+#         return 'Slot number not found', 404
+
+
 @main.route('/get_start_time', methods=['POST'])
 def fetch_times():
     slot_number = request.form['slot_number']
-    times = get_times(slot_number)
-    if times:
-        entry_time, exit_time = times
-        # Convert timedelta to hours, minutes, and seconds
-        entry_total_seconds = entry_time.total_seconds()
-        entry_hours, remainder = divmod(entry_total_seconds, 3600)
-        entry_minutes, entry_seconds = divmod(remainder, 60)
-        formatted_entry_time = f"{int(entry_hours):02}:{int(entry_minutes):02}:{int(entry_seconds):02}"
+    times = get_times(slot_number)  # This should return multiple unpaid entries
 
-        exit_total_seconds = exit_time.total_seconds()
-        exit_hours, remainder = divmod(exit_total_seconds, 3600)
-        exit_minutes, exit_seconds = divmod(remainder, 60)
-        formatted_exit_time = f"{int(exit_hours):02}:{int(exit_minutes):02}:{int(exit_seconds):02}"
-        time_difference_seconds = (exit_time - entry_time).total_seconds()
-        time_difference_hours = time_difference_seconds / 3600
-        total_money = round(time_difference_hours * 100, 2)
-        return render_template('payment.html', entry_time=formatted_entry_time, exit_time=formatted_exit_time, time_difference=time_difference_seconds, total_money=total_money )
+    if times:
+        unpaid_entries = []
+        for entry_time, exit_time in times:
+            # Check if the times are datetime or timedelta objects
+            if isinstance(entry_time, timedelta) and isinstance(exit_time, timedelta):
+                # Convert timedelta to total seconds
+                entry_total_seconds = entry_time.total_seconds()
+                exit_total_seconds = exit_time.total_seconds()
+
+                # Calculate entry and exit times in HH:MM:SS format
+                entry_hours, remainder = divmod(entry_total_seconds, 3600)
+                entry_minutes, entry_seconds = divmod(remainder, 60)
+                formatted_entry_time = f"{int(entry_hours):02}:{int(entry_minutes):02}:{int(entry_seconds):02}"
+
+                exit_hours, remainder = divmod(exit_total_seconds, 3600)
+                exit_minutes, exit_seconds = divmod(remainder, 60)
+                formatted_exit_time = f"{int(exit_hours):02}:{int(exit_minutes):02}:{int(exit_seconds):02}"
+
+                # Calculate the time difference in hours
+                time_difference_seconds = exit_total_seconds - entry_total_seconds
+                time_difference_hours = time_difference_seconds / 3600
+
+            elif isinstance(entry_time, datetime) and isinstance(exit_time, datetime):
+                # If entry_time and exit_time are datetime objects, use strftime
+                formatted_entry_time = entry_time.strftime('%H:%M:%S')
+                formatted_exit_time = exit_time.strftime('%H:%M:%S')
+
+                # Calculate the time difference in hours
+                time_difference_hours = (exit_time - entry_time).total_seconds() / 3600
+
+            # Calculate the total money for this entry
+            total_money = round(time_difference_hours * 100, 2)
+
+            # Store each unpaid entry along with its calculated total money
+            unpaid_entries.append({
+                'entry_time': formatted_entry_time,
+                'exit_time': formatted_exit_time,
+                'total_time': time_difference_hours,
+                'total_money': total_money
+            })
+
+        # Check if more than one unpaid entry exists for the given space_id
+        if len(unpaid_entries) > 1:
+            # Render a selection page for the user to choose the desired entry
+            return render_template('select_payment.html', unpaid_entries=unpaid_entries, slot_number=slot_number)
+        else:
+            # Process the single unpaid entry if there's only one
+            entry = unpaid_entries[0]
+            return render_template(
+                'payment.html',
+                entry_time=entry['entry_time'],
+                exit_time=entry['exit_time'],
+                total_money=entry['total_money']
+            )
     else:
         return 'Slot number not found', 404
+
