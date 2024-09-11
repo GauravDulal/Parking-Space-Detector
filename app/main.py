@@ -50,13 +50,31 @@ def delete(log_id):
 def checkout():
     return render_template('checkout.html')
 
-# @main.route('/live')
-# def live():
-#     try:
-#         subprocess.run(['python', 'app_main.py'], check=True)
-#         return "Main script executed successfully!"
-#     except subprocess.CalledProcessError as e:
-#         return f"An error occurred: {e}"
+@main.route('/live')
+def live():
+    try:
+        result = subprocess.run(
+            ['venv/Scripts/python', 'app_main.py'],
+            check=True, 
+            capture_output=True, 
+            text=True
+        )
+        return redirect(url_for('main.index'))
+    except subprocess.CalledProcessError as e:
+        return jsonify({
+            "message": "An error occurred",
+            "error": str(e),
+            "stderr": e.stderr,
+            "suggestion": "It seems like the 'cv2' module is missing. Run 'pip install opencv-python' to install it."
+        }), 500
+    except FileNotFoundError as e:
+        return jsonify({
+            "message": "Script not found",
+            "error": str(e)
+        }), 404
+
+
+    
 @main.route('/status')
 def status():
     try:
@@ -82,7 +100,7 @@ def get_total_cars_route():
 def get_total_money():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT SUM(cost) FROM log')
+    cursor.execute('SELECT ROUND(SUM(cost),2) FROM log')
     total_money = cursor.fetchone()[0]
     conn.close()
     return total_money
@@ -92,12 +110,12 @@ def get_total_money_route():
     total_money = get_total_money()
     return jsonify(total_money=total_money)
 
-def get_times(log_id):
+def get_times(space_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
         # Execute query
-        cursor.execute('SELECT entry_time, exit_time FROM log WHERE log_id = %s', (log_id,))
+        cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s', (space_id,))
         
         # Fetch the result (fetchone will fetch a single record)
         times = cursor.fetchone()
