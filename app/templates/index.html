@@ -177,9 +177,9 @@
             <div class="p-4 text-right">
                 <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Today's
                     Collection</p>
-                <h4
+                <h4 id="total-money"
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    Rs.53k</h4>
+                    </h4>
             </div>
         </div>
         <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
@@ -202,9 +202,9 @@
             <div class="p-4 text-right">
                 <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Total Car
                     Parked</p>
-                <h4
+                <h4 id="total-cars"
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    3,462</h4>
+                   </h4>
             </div>
         </div>
         <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
@@ -239,6 +239,42 @@
         </div>
 </body>
 <script>
+    // Update total cars
+    function updateTotalCars() {
+        fetch('/get_total_cars')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-cars').innerText = data.total_cars;
+            })
+            .catch(error => console.error('Error fetching total cars:', error));
+    }
+
+    // Automatically update total cars after the page loads
+    window.onload = function() {
+        updateTotalCars();
+    }
+
+    setInterval(updateTotalCars, 1000);  // Update every 5 seconds
+
+
+    // Update total money
+    function updateTotalMoney() {
+        fetch('/get_total_money')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('total-money').innerText = data.total_money;
+            })
+            .catch(error => console.error('Error fetching total money:', error));
+    }
+
+    // Automatically update total money after the page loads
+    window.onload = function() {
+        updateTotalMoney();
+    }
+    setInterval(updateTotalMoney, 1000);  // Update every 5 seconds
+
+
+
     document.getElementById('menu-btn').addEventListener('click', () => {
         const menu = document.getElementById('menu');
         menu.classList.toggle('hidden');
