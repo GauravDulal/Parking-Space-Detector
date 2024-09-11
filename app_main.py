@@ -81,32 +81,86 @@ def checkParkingSpace(imgPro):
         colorR=(0, 200, 0),
     )
 
-    # Compare current status with previous status
+    # Compare current status with previous status :>
     for key in status:
         if key in previous_status:
             key_value = key.find('_')
             result = key[key_value + 1:]
+            # Detect when a parking space changes from occupied to vacant (Exit)
             if previous_status[key] == True and status[key] == False:
-                try:
-                    cursor.execute('INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
-                            (result, timestamp, entry_times.get(int(result)), timestamp, 0, 'Entry', 'Unpaid'))
-                    conn.commit() 
-                finally:
-                      print(f"{key} is logged as Entry")
+                # Entry log
+                if int(result) in entry_times:
+                    entry_time = entry_times.pop(int(result))
+                    try:
+                        cursor.execute(
+                            'INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
+                            (result, timestamp, entry_time, timestamp, 0, 'Entry', 'Unpaid')
+                        )
+                        conn.commit()
+                        print(f"{key} is logged as Entry")
+                    except Exception as e:
+                        print(f"Failed to log entry for space {key}: {e}")
+
+            # Detect when a parking space changes from vacant to occupied (Entry)
             elif previous_status[key] == False and status[key] == True:
                 if int(result) in entry_times:
                     entry_time = entry_times.pop(int(result))
                     duration = timestamp - entry_time
                     hours_parked = duration.total_seconds() / 3600
-                    parked_time = hours_parked # multiply by 100 for small time the amount is significantly lower
+                    parked_time = hours_parked  # multiply by 100 for small time
                     cost = round(parked_time * 500, 2)
-                try:
-                    cursor.execute('INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
-                            (result, timestamp, entry_time, timestamp, cost, 'Exit', 'Unpaid'))
-                    conn.commit() 
-                finally:
-                      print(f"{key} is logged as Exit")
 
+                # Log exit
+                try:
+                    cursor.execute(
+                        'INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
+                        (result, timestamp, entry_time, timestamp, cost, 'Exit', 'Unpaid')
+                    )
+                    conn.commit()
+                    print(f"{key} is logged as Exit with cost {cost}")
+                except Exception as e:
+                    print(f"Failed to log exit for space {key}: {e}")
+                    
+                    
+                # Check if the space_id exists in the `payment` table
+                cursor.execute('SELECT * FROM payment WHERE space_id = %s AND payment_status = "Paid"', (result,))
+                payment_record = cursor.fetchone()
+
+                if payment_record:
+                    # Update existing payment record
+                    try:
+                        cursor.execute(
+                            'UPDATE payment SET entry_time = %s, exit_time = %s, cost = %s WHERE space_id = %s AND payment_status = "Unpaid"',
+                            (entry_time, timestamp, cost, result)
+                        )
+                        conn.commit()
+                        print(f"Updated payment for space {key} with cost {cost}")
+                    except Exception as e:
+                        print(f"Failed to update payment for space {key}: {e}")
+                else:
+                    # Insert new payment record if it doesn't exist
+                    if cost > 0:
+                        try:
+                            cursor.execute(
+                                'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status) VALUES (%s,%s,%s,%s,%s)', 
+                                (result, entry_time, timestamp, cost, 'Unpaid')
+                            )
+                            conn.commit()
+                            print(f"{key} is inserted into payment with cost {cost}")
+                        except Exception as e:
+                            print(f"Failed to insert into payment for space {key}: {e}")                    
+
+                # Insert into `payment` table if the cost is greater than 0
+                # if cost > 0:
+                #     try:
+                #         cursor.execute(
+                #             'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status) VALUES (%s,%s,%s,%s, %s)', 
+                #             (result, entry_time, timestamp, cost, 'Unpaid')
+                #         )
+                #         conn.commit()
+                #         print(f"{key} is inserted into payment with cost {cost}")
+                #     except Exception as e:
+                #         print(f"Failed to insert into payment for space {key}: {e}")
     # Update previous status
     previous_status = status.copy()
 
