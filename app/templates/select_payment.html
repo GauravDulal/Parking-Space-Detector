@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Select Payment</title>
     <script src="https://cdn.tailwindcss.com"></script>
-   
 </head>
 
 <body class="bg-gray-100">
@@ -56,7 +55,7 @@
                 {% for entry in unpaid_entries %}
                 <div class="bg-gray-50 p-4 rounded-lg shadow-md">
                     <label class="flex items-center space-x-4">
-                        <input type="radio" name="selected_entry" value="{{ entry.id }}" data-cost="{{ entry.total_money }}" class="form-radio h-5 w-5 text-red-500">
+                        <input type="radio" name="selected_entry" value="{{ entry.payment_id }}" data-cost="{{ entry.total_money }}" class="form-radio h-5 w-5 text-red-500">
                         <div>
                             <p class="text-lg font-semibold text-gray-700">Parking Slot {{ loop.index }}</p>
                             <p class="text-gray-600">Entry Time: {{ entry.entry_time }}</p>
@@ -79,27 +78,23 @@
                     <div id="paypal-button-container" class="mt-4"></div>
                 </div>
             </form>
-            <!-- PayPal button will be rendered here -->
-            
         </div>
     </div>
 </body>
 <script src="https://www.paypal.com/sdk/js?client-id=AWooxlizdlA5n9YrzZZriz5AEeHAzbD_SY1nDj8_loTBGgFcciG4NyiM0ZmdxHYE26v7menDbjmSPRrQ&currency=USD"></script>
 
-
-</html>
-
 <script>
     paypal.Buttons({
         createOrder: function(data, actions) {
-            // Get the selected parking slot's cost
+            // Get the selected parking slot's cost and ID
             var selectedEntry = document.querySelector('input[name="selected_entry"]:checked');
             if (!selectedEntry) {
                 alert("Please select a parking slot.");
                 return;
             }
             var cost = selectedEntry.getAttribute('data-cost');
-
+            var paymentId = selectedEntry.value; // Payment ID for backend processing
+    
             // Set up the transaction with the selected cost
             return actions.order.create({
                 purchase_units: [{
@@ -107,18 +102,49 @@
                         value: cost // Set the amount dynamically
                     }
                 }]
+            }).then(function(orderID) {
+                // Store paymentId and orderID in the transaction
+                window.paypalTransaction = {
+                    paymentId: paymentId,
+                    orderID: orderID
+                };
+                return orderID;
             });
         },
         onApprove: function(data, actions) {
             // This captures the funds from the transaction
             return actions.order.capture().then(function(details) {
                 alert('Transaction completed by ' + details.payer.name.given_name);
-                // You can redirect to the success page or submit the form here
-                document.getElementById('payment-form').submit();
+    
+                // Send a request to the server to update the payment status
+                return fetch('/update-payment-status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        payment_id: window.paypalTransaction.paymentId,
+                        payment_status: 'Paid'
+                    })
+                }).then(function(response) {
+                    if (response.ok) {
+                        // Optionally redirect to a success page or update the frontend
+                        alert('Payment status updated successfully.');
+                        // Optionally remove the entry from the frontend
+                        selectedEntry.closest('.bg-gray-50').remove();
+                    } else {
+                        alert('Error updating payment status.');
+                    }
+                }).catch(function(error) {
+                    console.error('Error:', error);
+                });
             });
         },
         onError: function(err) {
-            console.error(err); // Handle any errors
+            console.error('PayPal Checkout Error:', err);
+            alert('An error occurred with the payment. Please try again. Detailed Error: ' + JSON.stringify(err));
         }
-    }).render('#paypal-button-container'); // Render the PayPal button
+    }).render('#paypal-button-container'); // Render the PayPal button inside this container
 </script>
+
+</html>

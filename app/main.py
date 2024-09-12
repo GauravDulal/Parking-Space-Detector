@@ -108,17 +108,12 @@ def get_total_money():
     conn.close()
     return total_money
 
-@main.route('/get_total_money')
-def get_total_money_route():
-    total_money = get_total_money()
-    return jsonify(total_money=total_money)
-
 def get_times(space_id):
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
         # Fetch all unpaid records for the space_id
-        cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s AND payment_status = "Unpaid"', (space_id,))
+        cursor.execute('SELECT payment_id, entry_time, exit_time FROM payment WHERE space_id = %s AND payment_status = "Unpaid"', (space_id,))
         times = cursor.fetchall()  # Fetch all unpaid entries
         if times:
             return times  # Returns a list of unpaid entries
@@ -131,58 +126,6 @@ def get_times(space_id):
         cursor.close()
         conn.close()
 
-
-
-# def get_times(space_id):
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
-#     try:
-#         # Execute query
-#         cursor.execute('SELECT entry_time, exit_time FROM payment WHERE space_id = %s', (space_id,))
-        
-#         # Fetch the result (fetchone will fetch a single record)
-#         times = cursor.fetchone()
-
-#         # Ensure all results are processed before closing the cursor
-#         cursor.fetchall()  # Use this to clear any remaining unread results if necessary
-
-#         if times:
-#             entry_time, exit_time = times
-#             return entry_time, exit_time
-#         else:
-#             return None
-#     except mysql.connector.Error as err:
-#         print(f"Error: {err}")
-#         return None
-#     finally:
-#         # Ensure cursor and connection are closed after the fetch
-#         cursor.close()
-#         conn.close()
-    
-# @main.route('/get_start_time', methods=['POST'])
-# def fetch_times():
-#     slot_number = request.form['slot_number']
-#     times = get_times(slot_number)
-#     if times:
-#         entry_time, exit_time = times
-#         # Convert timedelta to hours, minutes, and seconds
-#         entry_total_seconds = entry_time.total_seconds()
-#         entry_hours, remainder = divmod(entry_total_seconds, 3600)
-#         entry_minutes, entry_seconds = divmod(remainder, 60)
-#         formatted_entry_time = f"{int(entry_hours):02}:{int(entry_minutes):02}:{int(entry_seconds):02}"
-
-#         exit_total_seconds = exit_time.total_seconds()
-#         exit_hours, remainder = divmod(exit_total_seconds, 3600)
-#         exit_minutes, exit_seconds = divmod(remainder, 60)
-#         formatted_exit_time = f"{int(exit_hours):02}:{int(exit_minutes):02}:{int(exit_seconds):02}"
-#         time_difference_seconds = (exit_time - entry_time).total_seconds()
-#         time_difference_hours = time_difference_seconds / 3600
-#         total_money = round(time_difference_hours * 100, 2)
-#         return render_template('payment.html', entry_time=formatted_entry_time, exit_time=formatted_exit_time, time_difference=time_difference_seconds, total_money=total_money )
-#     else:
-#         return 'Slot number not found', 404
-
-
 @main.route('/get_start_time', methods=['POST'])
 def fetch_times():
     slot_number = request.form['slot_number']
@@ -190,7 +133,7 @@ def fetch_times():
 
     if times:
         unpaid_entries = []
-        for entry_time, exit_time in times:
+        for payment_id, entry_time, exit_time in times:
             # Check if the times are datetime or timedelta objects
             if isinstance(entry_time, timedelta) and isinstance(exit_time, timedelta):
                 # Convert timedelta to total seconds
@@ -223,6 +166,7 @@ def fetch_times():
 
             # Store each unpaid entry along with its calculated total money
             unpaid_entries.append({
+                'payment_id': payment_id,
                 'entry_time': formatted_entry_time,
                 'exit_time': formatted_exit_time,
                 'total_time': time_difference_hours,
@@ -240,9 +184,39 @@ def fetch_times():
                 'payment.html',
                 entry_time=entry['entry_time'],
                 exit_time=entry['exit_time'],
-                total_money=entry['total_money']
+                total_money=entry['total_money'],
+                payment_id=entry['payment_id']
             )
     else:
         return 'Slot number not found', 404
-    
 
+@main.route('/update-payment-status', methods=['POST'])
+def update_payment_status():
+    data = request.get_json()
+    payment_id = data.get('payment_id')
+    payment_status = data.get('payment_status')
+    
+    if not payment_id or not payment_status:
+        return jsonify({'error': 'Invalid input'}), 400
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute('''
+            UPDATE payment 
+            SET payment_status = %s 
+            WHERE payment_id = %s AND payment_status = 'Unpaid'
+        ''', (payment_status, payment_id))
+        conn.commit()
+        if cursor.rowcount == 0:
+            return jsonify({'error': 'No record updated. Check if payment_id is correct and status is "Unpaid".'}), 404
+        return jsonify({'message': 'Payment status updated successfully.'}), 200
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return jsonify({'error': f'Database error occurred: {err}'}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+if __name__ == '__main__':
+    main.run(debug=True)
