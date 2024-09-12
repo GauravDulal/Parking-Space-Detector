@@ -4,6 +4,8 @@ import mysql.connector
 import pickle
 import subprocess
 from datetime import timedelta, datetime
+import requests
+
 
 main = Blueprint('main', __name__)
 
@@ -242,4 +244,5 @@ def fetch_times():
             )
     else:
         return 'Slot number not found', 404
+    
 
