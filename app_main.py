@@ -46,17 +46,14 @@ def checkParkingSpace(imgPro):
             spaceCounter += 1
             status[f"space_{i+1}"] = True  # True means vacant
             if i+1 in entry_times:
-                # Calculate duration and cost
                 entry_time = entry_times.pop(i+1)
                 duration = timestamp - entry_time
                 hours_parked = duration.total_seconds() / 3600
-                parked_time = hours_parked # multiply by 100 for small time the amount is significantly lower
-                cost = round(parked_time * 100, 2)
+                cost = round(hours_parked * 100, 2)
         else:
             color = (0, 0, 255)  # red
             thickness = 2
             status[f"space_{i+1}"] = False  # False means occupied
-            # Record the entry time if the space is newly occupied
             if i+1 not in entry_times:
                 entry_times[i+1] = timestamp
 
@@ -81,14 +78,13 @@ def checkParkingSpace(imgPro):
         colorR=(0, 200, 0),
     )
 
-    # Compare current status with previous status :>
+    # Compare current status with previous status
     for key in status:
         if key in previous_status:
             key_value = key.find('_')
             result = key[key_value + 1:]
-            # Detect when a parking space changes from occupied to vacant (Exit)
+
             if previous_status[key] == True and status[key] == False:
-                # Entry log
                 if int(result) in entry_times:
                     entry_time = entry_times.pop(int(result))
                     try:
@@ -101,16 +97,13 @@ def checkParkingSpace(imgPro):
                     except Exception as e:
                         print(f"Failed to log entry for space {key}: {e}")
 
-            # Detect when a parking space changes from vacant to occupied (Entry)
             elif previous_status[key] == False and status[key] == True:
                 if int(result) in entry_times:
                     entry_time = entry_times.pop(int(result))
                     duration = timestamp - entry_time
                     hours_parked = duration.total_seconds() / 3600
-                    parked_time = hours_parked  # multiply by 100 for small time
-                    cost = round(parked_time * 500, 2)
+                    cost = round(hours_parked * 500, 2)
 
-                # Log exit
                 try:
                     cursor.execute(
                         'INSERT INTO log (space_id, log_time, entry_time, exit_time, cost, status, payment_status) VALUES (%s,%s,%s,%s,%s, %s, %s)', 
@@ -122,40 +115,40 @@ def checkParkingSpace(imgPro):
                 except Exception as e:
                     print(f"Failed to log exit for space {key}: {e}")
                     
-                    
-                # Check if the space_id exists in the `payment` table
-                cursor.execute('SELECT * FROM payment WHERE space_id = %s AND payment_status = "Paid"', (result,))
-                payment_record = cursor.fetchone()
+                try:
+                    cursor.execute('SELECT * FROM payment WHERE space_id = %s AND payment_status = "Paid"', (result,))
+                    payment_record = cursor.fetchone()
+                    cursor.fetchall()  # Ensure all results are fetched to avoid unread result error
 
-                if payment_record:
-                    # Update existing payment record
-                    try:
-                        cursor.execute(
-                            'UPDATE payment SET entry_time = %s, exit_time = %s, cost = %s WHERE space_id = %s AND payment_status = "Unpaid"',
-                            (entry_time, timestamp, cost, result)
-                        )
-                        conn.commit()
-                        print(f"Updated payment for space {key} with cost {cost}")
-                    except Exception as e:
-                        print(f"Failed to update payment for space {key}: {e}")
-                else:
-                    # Insert new payment record if it doesn't exist
-                    if cost > 0:
+                    if payment_record:
                         try:
                             cursor.execute(
-                                'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status,log_id) VALUES (%s,%s,%s,%s,%s,%s)', 
-                                (result, entry_time, timestamp, cost, 'Unpaid',log_id)
+                                'UPDATE payment SET entry_time = %s, exit_time = %s, cost = %s WHERE space_id = %s AND payment_status = "Unpaid"',
+                                (entry_time, timestamp, cost, result)
                             )
                             conn.commit()
-                            print(f"{key} is inserted into payment with cost {cost}")
+                            print(f"Updated payment for space {key} with cost {cost}")
                         except Exception as e:
-                            print(f"Failed to insert into payment for space {key}: {e}")                    
+                            print(f"Failed to update payment for space {key}: {e}")
+                    else:
+                        if cost > 0:
+                            try:
+                                cursor.execute(
+                                    'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status,log_id) VALUES (%s,%s,%s,%s,%s,%s)', 
+                                    (result, entry_time, timestamp, cost, 'Unpaid', log_id)
+                                )
+                                conn.commit()
+                                print(f"{key} is inserted into payment with cost {cost}")
+                            except Exception as e:
+                                print(f"Failed to insert into payment for space {key}: {e}")   
+                except Exception as e:
+                    print(f"Failed to retrieve payment record for space {key}: {e}")
 
-    # Update previous status
     previous_status = status.copy()
 
     with open('parking_status.pkl', 'wb') as file:
         pickle.dump(status, file)
+
 
 while True:
     if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):

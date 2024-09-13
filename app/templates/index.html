@@ -23,6 +23,7 @@
             margin-top: 20px;
         }
 
+
         .parking-space {
             width: 200px;
             height: 35px;
@@ -179,7 +180,7 @@
                     Collection</p>
                 <h4 id="total-money"
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    </h4>
+                </h4>
             </div>
         </div>
         <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
@@ -204,7 +205,7 @@
                     Parked</p>
                 <h4 id="total-cars"
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                   </h4>
+                </h4>
             </div>
         </div>
         <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
@@ -229,7 +230,7 @@
     </div>
     </div>
     <div class="container  justify-center items-center p-2 xl:p-8 md:p-4 ">
-        <div class="container justify-center items-center p-2 xl:p-8 md:p-4 2xl:ml-64 ">
+        <div class="container justify-center items-center p-2 xl:p-8 md:p-4  ">
             <div class="text flex flex-col items-center justify-center">
                 <p class="font-bold text-2xl mb-4 ml-8 ">Parking Area</p>
             </div>
@@ -250,7 +251,7 @@
     }
 
     // Automatically update total cars after the page loads
-    window.onload = function() {
+    window.onload = function () {
         updateTotalCars();
     }
 
@@ -268,10 +269,10 @@
     }
 
     // Automatically update total money after the page loads
-    window.onload = function() {
+    window.onload = function () {
         updateTotalMoney();
     }
-    setInterval(updateTotalMoney, 1000);  
+    setInterval(updateTotalMoney, 1000);
 
 
 
