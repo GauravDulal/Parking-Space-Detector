@@ -108,6 +108,11 @@ def get_total_money():
     conn.close()
     return total_money
 
+@main.route('/get_total_money')
+def get_total_money_route():
+    total_money = get_total_money()
+    return jsonify(total_money=total_money)
+
 def get_times(space_id):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -174,19 +179,9 @@ def fetch_times():
             })
 
         # Check if more than one unpaid entry exists for the given space_id
-        if len(unpaid_entries) > 1:
+        if len(unpaid_entries) > 0:
             # Render a selection page for the user to choose the desired entry
             return render_template('select_payment.html', unpaid_entries=unpaid_entries, slot_number=slot_number)
-        else:
-            # Process the single unpaid entry if there's only one
-            entry = unpaid_entries[0]
-            return render_template(
-                'payment.html',
-                entry_time=entry['entry_time'],
-                exit_time=entry['exit_time'],
-                total_money=entry['total_money'],
-                payment_id=entry['payment_id']
-            )
     else:
         return 'Slot number not found', 404
 
@@ -208,6 +203,17 @@ def update_payment_status():
             WHERE payment_id = %s AND payment_status = 'Unpaid'
         ''', (payment_status, payment_id))
         conn.commit()
+        cursor.execute(''' SELECT log_id FROM payment WHERE payment_id= %s''',(payment_id,))
+        log_id = cursor.fetchone()
+        log_id = log_id[0]
+        print(log_id)
+        cursor.execute('''
+            UPDATE log 
+            SET payment_status = %s 
+            WHERE log_id = %s AND payment_status = 'Unpaid'
+        ''', (payment_status, log_id))
+        conn.commit()        
+        
         if cursor.rowcount == 0:
             return jsonify({'error': 'No record updated. Check if payment_id is correct and status is "Unpaid".'}), 404
         return jsonify({'message': 'Payment status updated successfully.'}), 200
@@ -217,6 +223,6 @@ def update_payment_status():
     finally:
         cursor.close()
         conn.close()
-
+    
 if __name__ == '__main__':
     main.run(debug=True)
