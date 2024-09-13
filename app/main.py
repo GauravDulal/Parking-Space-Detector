@@ -42,6 +42,7 @@ def log():
 def delete(log_id):
     conn = get_db_connection()
     cursor = conn.cursor()
+    cursor.execute("DELETE FROM payment WHERE log_id = %s", (log_id,))
     cursor.execute("DELETE FROM log WHERE log_id = %s", (log_id,))
     conn.commit()
     cursor.close()
