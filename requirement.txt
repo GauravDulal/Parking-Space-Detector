@@ -7,3 +7,4 @@ mysql-connector-python
 pymysql
 opencv-python
 cvzone
+requests

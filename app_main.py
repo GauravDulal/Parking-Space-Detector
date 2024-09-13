@@ -117,6 +117,7 @@ def checkParkingSpace(imgPro):
                         (result, timestamp, entry_time, timestamp, cost, 'Exit', 'Unpaid')
                     )
                     conn.commit()
+                    log_id = cursor.lastrowid
                     print(f"{key} is logged as Exit with cost {cost}")
                 except Exception as e:
                     print(f"Failed to log exit for space {key}: {e}")
@@ -142,25 +143,14 @@ def checkParkingSpace(imgPro):
                     if cost > 0:
                         try:
                             cursor.execute(
-                                'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status) VALUES (%s,%s,%s,%s,%s)', 
-                                (result, entry_time, timestamp, cost, 'Unpaid')
+                                'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status,log_id) VALUES (%s,%s,%s,%s,%s,%s)', 
+                                (result, entry_time, timestamp, cost, 'Unpaid',log_id)
                             )
                             conn.commit()
                             print(f"{key} is inserted into payment with cost {cost}")
                         except Exception as e:
                             print(f"Failed to insert into payment for space {key}: {e}")                    
 
-                # Insert into `payment` table if the cost is greater than 0
-                # if cost > 0:
-                #     try:
-                #         cursor.execute(
-                #             'INSERT INTO payment (space_id, entry_time, exit_time, cost, payment_status) VALUES (%s,%s,%s,%s, %s)', 
-                #             (result, entry_time, timestamp, cost, 'Unpaid')
-                #         )
-                #         conn.commit()
-                #         print(f"{key} is inserted into payment with cost {cost}")
-                #     except Exception as e:
-                #         print(f"Failed to insert into payment for space {key}: {e}")
     # Update previous status
     previous_status = status.copy()
 
