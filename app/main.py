@@ -103,7 +103,7 @@ def get_total_cars_route():
 def get_total_money():
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('SELECT ROUND(SUM(cost),2) FROM log')
+    cursor.execute('SELECT ROUND(SUM(cost),2) FROM payment WHERE payment_status="Paid"')
     total_money = cursor.fetchone()[0]
     conn.close()
     return total_money
